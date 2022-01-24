@@ -9,7 +9,7 @@ function close_gate () {
 }
 function toll_gate () {
     toll_deducter()
-    if (is_toll_recieved) {
+    if (is_toll_recieved == true) {
         open_gate()
         control.waitMicros(5000000)
         close_gate()
