@@ -9,9 +9,9 @@ function close_gate () {
 }
 function lcd_1602_display () {
     if (is_toll_recieved == true) {
-        makerbit.showStringOnLcd1602("MakerBit", makerbit.position1602(LcdPosition1602.Pos1), 1)
+        makerbit.showStringOnLcd1602("Authorized access. Please move.", makerbit.position1602(LcdPosition1602.Pos1), 1, TextOption.AlignLeft)
     } else {
-    	
+        makerbit.showStringOnLcd1602("Unathorized access. Please recharge.", makerbit.position1602(LcdPosition1602.Pos1), 1, TextOption.AlignLeft)
     }
 }
 function toll_gate () {
