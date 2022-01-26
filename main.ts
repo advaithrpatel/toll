@@ -6,6 +6,9 @@ function toll_gate () {
         close_gate()
     }
 }
+makerbit.onUltrasonicObjectDetected(20, DistanceUnit.CM, function () {
+	
+})
 function lcd_1602_display () {
     if (is_toll_recieved == true) {
         makerbit.showStringOnLcd1602("Authorized access. Please move.", makerbit.position1602(LcdPosition1602.Pos1), 1, TextOption.AlignLeft)
@@ -14,10 +17,10 @@ function lcd_1602_display () {
     }
 }
 makerbit.onUltrasonicObjectDetected(10, DistanceUnit.CM, function () {
-    toll_gate()
+	
 })
 function close_gate () {
-    servos.P0.setAngle(90)
+    servos.P1.setAngle(90)
 }
 input.onButtonPressed(Button.A, function () {
     toll_gate()
@@ -35,9 +38,8 @@ function toll_deducter () {
     basic.showNumber(fastag1)
 }
 function open_gate () {
-    servos.P0.setAngle(0)
+    servos.P1.setAngle(0)
 }
-let distance = 0
 let fastag1 = 0
 let index = 0
 let is_toll_recieved = false
@@ -45,11 +47,17 @@ let list2: number[] = []
 let toll = 0
 toll = 100
 list2 = [1023]
-I2C_LCD1602.LcdInit(63)
-makerbit.connectUltrasonicDistanceSensor(DigitalPin.P3, DigitalPin.P6)
-I2C_LCD1602.BacklightOff()
+servos.P1.setRange(0, 180)
 close_gate()
 basic.forever(function () {
-    distance = makerbit.getUltrasonicDistance(DistanceUnit.CM)
-    basic.showNumber(distance)
+    pins.digitalWritePin(DigitalPin.P3, 0)
+    control.waitMicros(20)
+    pins.digitalWritePin(DigitalPin.P3, 1)
+    control.waitMicros(40)
+    pins.digitalWritePin(DigitalPin.P3, 0)
+    if (pins.pulseIn(DigitalPin.P2, PulseValue.High) / 58 <= 30) {
+        toll_gate()
+    } else {
+        basic.showIcon(IconNames.Heart)
+    }
 })

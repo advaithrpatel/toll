@@ -1,13 +1,14 @@
+def toll_gate():
+    toll_deducter()
+    if is_toll_recieved == True:
+        open_gate()
+        control.wait_micros(5000000)
+        close_gate()
+
 def on_ultrasonic_object_detected_cm():
-    toll_gate()
-makerbit.on_ultrasonic_object_detected(10, DistanceUnit.CM, on_ultrasonic_object_detected_cm)
+    pass
+makerbit.on_ultrasonic_object_detected(20, DistanceUnit.CM, on_ultrasonic_object_detected_cm)
 
-def on_button_pressed_a():
-    toll_gate()
-input.on_button_pressed(Button.A, on_button_pressed_a)
-
-def close_gate():
-    servos.P0.set_angle(90)
 def lcd_1602_display():
     if is_toll_recieved == True:
         makerbit.show_string_on_lcd1602("Authorized access. Please move.",
@@ -19,12 +20,18 @@ def lcd_1602_display():
             makerbit.position1602(LcdPosition1602.POS1),
             1,
             TextOption.ALIGN_LEFT)
-def toll_gate():
-    toll_deducter()
-    if is_toll_recieved == True:
-        open_gate()
-        control.wait_micros(5000000)
-        close_gate()
+
+def on_ultrasonic_object_detected_cm2():
+    toll_gate()
+makerbit.on_ultrasonic_object_detected(10, DistanceUnit.CM, on_ultrasonic_object_detected_cm2)
+
+def close_gate():
+    servos.P1.set_angle(90)
+
+def on_button_pressed_a():
+    toll_gate()
+input.on_button_pressed(Button.A, on_button_pressed_a)
+
 def toll_deducter():
     global index, fastag1, is_toll_recieved
     index = 0
@@ -37,8 +44,7 @@ def toll_deducter():
     list2[index] = fastag1
     basic.show_number(fastag1)
 def open_gate():
-    servos.P0.set_angle(0)
-distance = 0
+    servos.P1.set_angle(0)
 fastag1 = 0
 index = 0
 is_toll_recieved = False
@@ -46,12 +52,17 @@ list2: List[number] = []
 toll = 0
 toll = 100
 list2 = [1023]
-makerbit.connect_lcd(127)
-makerbit.connect_ultrasonic_distance_sensor(DigitalPin.P3, DigitalPin.P6)
+servos.P1.set_range(0, 180)
 close_gate()
 
 def on_forever():
-    global distance
-    distance = makerbit.get_ultrasonic_distance(DistanceUnit.CM)
-    basic.show_number(distance)
+    pins.digital_write_pin(DigitalPin.P3, 0)
+    control.wait_micros(20)
+    pins.digital_write_pin(DigitalPin.P3, 1)
+    control.wait_micros(40)
+    pins.digital_write_pin(DigitalPin.P3, 0)
+    if pins.pulse_in(DigitalPin.P2, PulseValue.HIGH) / 58 <= 20:
+        toll_gate()
+    else:
+        basic.show_icon(IconNames.HEART)
 basic.forever(on_forever)
